@@ -1,0 +1,88 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require 'gkhtmltopdf'
+
+options = {
+  print_options: {},
+  firefox_prefs: {}
+}
+
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: gkhtmltopdf [options] <URL_OR_FILE> <OUTPUT_PDF>"
+
+  opts.on("-O", "--orientation [PORTRAIT|LANDSCAPE]", "default: portrait") do |v|
+    options[:print_options][:orientation] = v.downcase
+  end
+
+  opts.on("--background", "Print background") do
+    options[:print_options][:background] = true
+  end
+
+  opts.on("--margin-top [CM]", Float, "margin top (cm)") do |v|
+    options[:print_options][:margin] ||= {}
+    options[:print_options][:margin][:top] = v
+  end
+
+  opts.on("--margin-bottom [CM]", Float, "margin bottom (cm)") do |v|
+    options[:print_options][:margin] ||= {}
+    options[:print_options][:margin][:bottom] = v
+  end
+
+  opts.on("--firefox-path [PATH]", "Firefox custom PATH") do |v|
+    options[:firefox_path] = v
+  end
+
+  opts.on("--geckodriver-path [PATH]", "geckodriver custom PATH") do |v|
+    options[:geckodriver_path] = v
+  end
+
+  opts.on("-v", "--version", "display version") do
+    puts "Gkhtmltopdf version #{Gkhtmltopdf::VERSION}"
+    exit
+  end
+
+  opts.on("-h", "--help", "display help") do
+    puts opts
+    exit
+  end
+end
+
+begin
+  parser.parse!
+
+  if ARGV.length != 2
+    puts parser.help
+    exit 1
+  end
+
+  input_url = ARGV[0]
+  output_path = ARGV[1]
+
+  unless input_url.start_with?('http://', 'https://', 'file://')
+    input_url = "file://#{File.absolute_path(input_url)}"
+  end
+
+  puts "Converting: #{input_url} -> #{output_path}"
+
+  init_options = {}
+  init_options[:firefox_path] = options.delete(:firefox_path) if options[:firefox_path]
+  init_options[:geckodriver_path] = options.delete(:geckodriver_path) if options[:geckodriver_path]
+
+  converter = Gkhtmltopdf::Converter.new(**init_options)
+  converter.convert(input_url, output_path, print_options: options[:print_options])
+
+  puts "✅ Completed PDF generation!"
+
+rescue Gkhtmltopdf::Error => e
+  warn "\e[31m[Error] #{e.message}\e[0m"
+  exit 1
+rescue OptionParser::InvalidOption => e
+  warn "\e[31m[Error] #{e.message}\e[0m"
+  puts parser.help
+  exit 1
+rescue StandardError => e
+  warn "\e[31m[Error] #{e.class}: #{e.message}\e[0m"
+  exit 1
+end

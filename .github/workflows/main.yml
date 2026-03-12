@@ -21,8 +21,13 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-          bundler-cache: true
       - name: Install dependencies
         run: bundle install
-      - name: Run the default task
+      - name: Install firefox
+        run: apt install -y firefox
+      - name: Downlload geckodriver
+        run: wget "https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz" -O /tmp/geckodriver.tar.gz
+      - name: Install geckodriver
+        run: tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin
+      - name: Run rspec test
         run: bundle exec rspec

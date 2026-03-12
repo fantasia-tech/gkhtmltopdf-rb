@@ -51,7 +51,7 @@ Gkhtmltopdf.convert('https://example.com', 'example_com.pdf')
 # local file
 Gkhtmltopdf.convert('file:///foo/bar/test.html', 'local.pdf')
 # with option (print background)
-Gkhtmltopdf.convert('https://f6a.net/dev/', 'with_bg.pdf', print_options: {background: true})
+Gkhtmltopdf.convert('https://f6a.net/oss/', 'with_bg.pdf', print_options: {background: true})
 ```
 
 #### shell
@@ -62,7 +62,7 @@ $ gkhtmltopdf https://example.com/ example_com.pdf
 # local file
 $ gkhtmltopdf /foo/bar/test.html local.pdf
 # with option (print background)
-$ gkhtmltopdf https://f6a.net/dev/ with_bg.pdf --background
+$ gkhtmltopdf https://f6a.net/oss/ with_bg.pdf --background
 # other option
 $ gkhtmltopdf --help
 ```

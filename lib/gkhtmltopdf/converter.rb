@@ -6,12 +6,11 @@ require 'socket'
 
 module Gkhtmltopdf
   class Converter
-    def initialize(geckodriver_path: 'geckodriver', firefox_path: nil, port: nil)
-      @geckodriver_path = geckodriver_path
+    def initialize(geckodriver_path: nil, firefox_path: nil, port: nil)
+      @geckodriver_path = resolve_geckodriver_path!(geckodriver_path)
+      @firefox_path = resolve_firefox_path!(firefox_path)
       @port = port || get_free_port
       @base_url = "http://127.0.0.1:#{@port}"
-      ensure_executable_exists!(@geckodriver_path)
-      @firefox_path = resolve_firefox_path!(firefox_path)
     end
 
     def convert(url, output_path, print_options: {})
@@ -47,25 +46,23 @@ module Gkhtmltopdf
       port
     end
 
-    def ensure_executable_exists!(command)
-      unless executable_exists?(command)
+    def resolve_geckodriver_path!(provided_path)
+      path = provided_path || find_default_geckodriver
+      unless path
         raise Error, "Geckodriver is not found. Please ensure Geckodriver is installed and either in your PATH or specify the path during initialization."
       end
+      path
     end
 
     def resolve_firefox_path!(provided_path)
       path = provided_path || find_default_firefox
-      
       unless path
         raise Error, "Firefox is not found. Please ensure Firefox is installed and either in your PATH or specify the path during initialization."
       end
-      
       path
     end
 
     def executable_exists?(cmd)
-      return true if File.executable?(cmd) && !File.directory?(cmd)
-
       exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
       ENV['PATH'].to_s.split(File::PATH_SEPARATOR).each do |path|
         exts.each do |ext|
@@ -74,6 +71,11 @@ module Gkhtmltopdf
         end
       end
       false
+    end
+
+    def find_default_geckodriver
+      return 'geckodriver' if executable_exists?('geckodriver')
+      nil
     end
 
     def find_default_firefox
@@ -127,10 +129,7 @@ module Gkhtmltopdf
 
       response = post("/session", payload)
       value = response["value"]
-
-      if value.is_a?(Hash) && value["error"]
-        raise Error, "Failed to launch Firefox: #{value["message"]}"
-      end
+      raise Error, "Failed to launch Firefox: #{value}" if value["error"]
 
       value["sessionId"]
     end
@@ -152,10 +151,7 @@ module Gkhtmltopdf
 
       response = post("/session/#{session_id}/print", payload)
       value = response["value"]
-
-      if value.is_a?(Hash) && value["error"]
-        raise Error, "Failed to generate PDF: #{value["message"]}"
-      end
+      raise Error, "Failed to generate PDF: #{value}" if value["error"]
 
       value
     end

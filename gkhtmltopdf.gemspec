@@ -15,11 +15,11 @@ Gem::Specification.new do |spec|
     This gem converts HTML to PDF using Firefox's Geckodriver.
   EOS
 
-  spec.homepage = "https://f6a.net/dev/#gem-gkhtmltopdf"
+  spec.homepage = "https://f6a.net/oss/"
   spec.required_ruby_version = '>= 3.2.0'
 
   spec.metadata['homepage_uri'] = spec.homepage
-  spec.metadata['source_code_uri'] = "https://github.com/fantasia.tech/gkhtmltopdf"
+  spec.metadata['source_code_uri'] = "https://github.com/fantasia-tech/gkhtmltopdf-rb"
 
   gemspec = File.basename(__FILE__)
   spec.files = IO.popen(%w[git ls-files -z], chdir: __dir__, err: IO::NULL) do |ls|
@@ -50,7 +50,7 @@ Gem::Specification.new do |spec|
     ⚠️ Caution
     Required: To run this gem, you need to have `firefox` and `geckodriver` installed and added to your PATH.
 
-    check [readme.md](https://github.com/fantasia.tech/gkhtmltopdf/blob/main/README.md) for more details.
+    check [readme.md](https://github.com/fantasia-tech/gkhtmltopdf-rb/blob/main/README.md) for more details.
     =====================================================================
   MSG
 end

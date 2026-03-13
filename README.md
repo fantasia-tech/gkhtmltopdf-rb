@@ -46,6 +46,7 @@ This gem converts HTML to PDF using Firefox's Geckodriver.
 > If you are accepting URLs from untrusted users, you must implement strict SSRF protection. Do not pass user-input URLs directly without network-level isolation. Please read the [SSRF](#what-is-ssrf) section below for details.
 
 ```ruby
+require 'gkhtmltopdf'
 # over network
 Gkhtmltopdf.convert('https://example.com', 'example_com.pdf')
 # local file

@@ -13,12 +13,14 @@ This gem converts HTML to PDF using Firefox's Geckodriver.
 
 1. [Firefox](https://www.firefox.com)
     - for Ubuntu
-        ```Ubuntu
+        ```bash
         $ apt install -y firefox
+        $ apt install -y fonts-noto # recommend
         ```
     - for Debian
         ```bash
         $ apt install -y firefox-esr
+        $ apt install -y fonts-noto # recommend
         ```
 2. [geckodriver](https://github.com/mozilla/geckodriver)
     - for Linux(Ubuntu / Debian)

@@ -3,6 +3,9 @@ FROM ruby:3.2-slim
 RUN apt-get update
 RUN apt-get install -y git wget xz-utils build-essential libyaml-dev
 
+# Install Noto Fonts
+RUN apt-get install -y fonts-noto
+
 # Install Firefox
 RUN apt-get install -y firefox-esr
 

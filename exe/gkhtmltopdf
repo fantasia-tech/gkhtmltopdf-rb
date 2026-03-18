@@ -34,8 +34,12 @@ parser = OptionParser.new do |opts|
     options[:firefox_path] = v
   end
 
-  opts.on("--geckodriver-path [PATH]", "geckodriver custom PATH") do |v|
+  opts.on("--geckodriver-path [PATH]", "Geckodriver custom PATH") do |v|
     options[:geckodriver_path] = v
+  end
+
+  opts.on("--launch-max-wait-time [NUM]", Integer, "Launch max wait time (approx: NUM * 0.1sec)") do |v|
+    options[:wait_time] = v
   end
 
   opts.on("-v", "--version", "display version") do
@@ -69,9 +73,9 @@ begin
   init_options = {}
   init_options[:firefox_path] = options.delete(:firefox_path) if options[:firefox_path]
   init_options[:geckodriver_path] = options.delete(:geckodriver_path) if options[:geckodriver_path]
+  init_options[:wait_time] = options.delete(:wait_time) if options[:wait_time]
 
-  converter = Gkhtmltopdf::Converter.new(**init_options)
-  converter.convert(input_url, output_path, print_options: options[:print_options])
+  Gkhtmltopdf.convert(input_url, output_path, print_options: options[:print_options], **init_options)
 
   puts "✅ Completed PDF generation!"
 

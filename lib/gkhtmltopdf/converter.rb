@@ -6,35 +6,35 @@ require 'socket'
 
 module Gkhtmltopdf
   class Converter
-    def initialize(geckodriver_path: nil, firefox_path: nil, port: nil)
+    def open(geckodriver_path: nil, firefox_path: nil, wait_time: nil, port: nil)
       @geckodriver_path = resolve_geckodriver_path!(geckodriver_path)
       @firefox_path = resolve_firefox_path!(firefox_path)
       @port = port || get_free_port
       @base_url = "http://127.0.0.1:#{@port}"
+      @pid = spawn("#{@geckodriver_path} --port #{@port}", out: File::NULL, err: File::NULL)
+      wait_time ||= 20
+      wait_for_gk(wait_time)
+      create_session!
     end
 
-    def convert(url, output_path, print_options: {})
-      validate_url_scheme!(url)
-
-      pid = spawn("#{@geckodriver_path} --port #{@port}", out: File::NULL, err: File::NULL)
-      wait_for_server
-
-      session_id = nil
+    def close
+      delete_session! if @session_id
       begin
-        session_id = create_session
-        navigate(session_id, url)
-        
-        pdf_base64 = print_pdf(session_id, print_options)
-        File.binwrite(output_path, Base64.decode64(pdf_base64))
-      ensure
-        delete_session(session_id) if session_id
-        begin
-          Process.kill('TERM', pid)
-          Process.wait(pid)
-        rescue Errno::ESRCH, Errno::ECHILD
-          # nothing to do if the process is already terminated
+        unless @pid.nil?
+          Process.kill('TERM', @pid)
+          Process.wait(@pid)
         end
+      rescue Errno::ESRCH, Errno::ECHILD
+        # nothing to do if the process is already terminated
       end
+      nil
+    end
+
+    def save_pdf(url, output_path, print_options: {})
+      validate_url_scheme!(url)
+      navigate(url)
+      pdf_base64 = print_pdf(print_options)
+      File.binwrite(output_path, Base64.decode64(pdf_base64))
     end
 
     private
@@ -49,7 +49,7 @@ module Gkhtmltopdf
     def resolve_geckodriver_path!(provided_path)
       path = provided_path || find_default_geckodriver
       unless path
-        raise Error, "Geckodriver is not found. Please ensure Geckodriver is installed and either in your PATH or specify the path during initialization."
+        raise PathUnresolvedError, 'Geckodriver'
       end
       path
     end
@@ -57,7 +57,7 @@ module Gkhtmltopdf
     def resolve_firefox_path!(provided_path)
       path = provided_path || find_default_firefox
       unless path
-        raise Error, "Firefox is not found. Please ensure Firefox is installed and either in your PATH or specify the path during initialization."
+        raise PathUnresolvedError, 'Firefox'
       end
       path
     end
@@ -89,16 +89,16 @@ module Gkhtmltopdf
       common_paths.find { |path| File.executable?(path) && !File.directory?(path) }
     end
 
-    def wait_for_server
-      10.times do
+    def wait_for_gk(num)
+      num.times do
         begin
           Net::HTTP.get(URI("#{@base_url}/status"))
           return
         rescue Errno::ECONNREFUSED
-          sleep 0.2
+          sleep 0.1
         end
       end
-      raise Error, "Failed to launch geckodriver (port #{@port})"
+      raise BrowserError, "Failed to launch geckodriver (port #{@port})"
     end
 
     def post(path, payload)
@@ -110,11 +110,11 @@ module Gkhtmltopdf
       begin
         JSON.parse(res.body)
       rescue JSON::ParserError
-        raise Error, "Invalid geckodriver response (Status: #{res.code}): #{res.body}"
+        raise BrowserError, "Invalid json response (Status: #{res.code}): #{res.body}"
       end
     end
 
-    def create_session
+    def create_session!
       firefox_options = { args: ["-headless"] }
       firefox_options[:binary] = @firefox_path if @firefox_path != 'firefox'
 
@@ -129,16 +129,16 @@ module Gkhtmltopdf
 
       response = post("/session", payload)
       value = response["value"]
-      raise Error, "Failed to launch Firefox: #{value}" if value["error"]
+      raise BrowserError, "Failed to create session: #{value}" if value["error"]
 
-      value["sessionId"]
+      @session_id = value["sessionId"]
     end
 
-    def navigate(session_id, url)
-      post("/session/#{session_id}/url", { url: url })
+    def navigate(url)
+      post("/session/#{@session_id}/url", { url: url })
     end
 
-    def print_pdf(session_id, user_options)
+    def print_pdf(user_options)
       default_options = {
         background: false,
         shrinkToFit: true,
@@ -149,25 +149,26 @@ module Gkhtmltopdf
 
       payload = default_options.merge(user_options)
 
-      response = post("/session/#{session_id}/print", payload)
+      response = post("/session/#{@session_id}/print", payload)
       value = response["value"]
-      raise Error, "Failed to generate PDF: #{value}" if value["error"]
+      raise BrowserError, "Failed to generate PDF: #{value}" if value["error"]
 
       value
     end
 
-    def delete_session(session_id)
-      uri = URI("#{@base_url}/session/#{session_id}")
+    def delete_session!
+      uri = URI("#{@base_url}/session/#{@session_id}")
       req = Net::HTTP::Delete.new(uri)
       Net::HTTP.start(uri.hostname, uri.port) { |http| http.request(req) }
+      @session_id = nil
     end
 
     def validate_url_scheme!(url_string)
       parsed_url = URI.parse(url_string)
       allowed_schemes = ['http', 'https', 'file']
-      raise Error, 'URL scheme is nil' if parsed_url.scheme.nil?
+      raise URLSchemeInvalid, nil if parsed_url.scheme.nil?
       unless allowed_schemes.include?(parsed_url.scheme)
-        raise Error, "Invalid URL scheme: #{parsed_url.scheme}"
+        raise URLSchemeInvalid, parsed_url.scheme
       end
     end
   end

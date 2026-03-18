@@ -10,6 +10,15 @@ SimpleCov.start do
   )
 end
 
+require 'gkhtmltopdf'
+require 'tmpdir'
+require 'base64'
+module FileFixtureHelper
+  def file_fixture(filename)
+    File.join(File.expand_path('fixtures', __dir__), filename)
+  end
+end
+
 # specs live under a `spec` directory, which RSpec adds to the `$LOAD_PATH`.
 # The generated `.rspec` file contains `--require spec_helper` which will cause
 # this file to always be loaded, without a need to explicitly require it in any
@@ -104,4 +113,6 @@ RSpec.configure do |config|
   #   # test failures related to randomization by passing the same `--seed` value
   #   # as the one that triggered the failure.
   #   Kernel.srand config.seed
+
+  config.include FileFixtureHelper
 end

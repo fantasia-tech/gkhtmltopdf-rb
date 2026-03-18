@@ -12,37 +12,39 @@ This gem converts HTML to PDF using Firefox's Geckodriver.
 ### 1. Install
 
 1. [Firefox](https://www.firefox.com)
-    - for Ubuntu
-        ```bash
-        $ apt install -y firefox
-        $ apt install -y fonts-noto # recommend
-        ```
-    - for Debian
-        ```bash
-        $ apt install -y firefox-esr
-        $ apt install -y fonts-noto # recommend
-        ```
+   - Ubuntu
+     ```bash
+     $ apt install -y firefox
+     $ apt install -y fonts-noto # recommended
+     ```
+   - Debian
+     ```bash
+     $ apt install -y firefox-esr
+     $ apt install -y fonts-noto # recommended
+     ```
+
 2. [geckodriver](https://github.com/mozilla/geckodriver)
-    - for Linux(Ubuntu / Debian)
-        ```bash
-        $ wget "https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz" -O /tmp/geckodriver.tar.gz
-        $ tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin
-        ```
+  - Linux (Ubuntu / Debian)
+    ```bash
+    $ wget "https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz" -O /tmp/geckodriver.tar.gz
+    $ tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin
+    ```
+
 3. gem install
-	- bundler
-        ```bash
-        $ bundle add gkhtmltopdf
-        ```
-    - other
-        ```bash
-        $ gem install gkhtmltopdf
-        ```
+  - bundler
+    ```bash
+    $ bundle add gkhtmltopdf
+    ```
+  - other
+    ```bash
+    $ gem install gkhtmltopdf
+    ```
 
 ---
 
 ### 2. Using
 
-#### ruby
+#### Ruby
 
 > **⚠️ Security Warning for Web Frameworks (e.g., Ruby on Rails):**
 > If you are accepting URLs from untrusted users, you must implement strict SSRF protection. Do not pass user-input URLs directly without network-level isolation. Please read the [SSRF](#what-is-ssrf) section below for details.
@@ -57,7 +59,19 @@ Gkhtmltopdf.convert('file:///foo/bar/test.html', 'local.pdf')
 Gkhtmltopdf.convert('https://f6a.net/oss/', 'with_bg.pdf', print_options: {background: true})
 ```
 
-#### shell
+Additionally, in version 1.0.0 we added the following syntax.  
+If you want to generate multiple PDFs faster, use this:
+
+```ruby
+require 'gkhtmltopdf'
+Gkhtmltopdf.open do |gkh2p|
+  gkh2p.save_pdf('https://example.com', 'example_com.pdf')
+  gkh2p.save_pdf('file:///foo/bar/test.html', 'local.pdf')
+  gkh2p.save_pdf('https://f6a.net/oss/', 'with_bg.pdf', print_options: {background: true})
+end
+```
+
+#### Shell
 
 ```bash
 # over network
@@ -88,6 +102,33 @@ If you integrate this gem into a web service that accepts arbitrary URLs from un
 Attackers could potentially generate PDFs of internal network resources (e.g., `localhost`, `192.168.0.1`, `169.254.169.254` for cloud metadata).
 
 **Recommendation:** Do not rely solely on application-level URL validation. If you process untrusted URLs, strongly consider using network-level isolation (such as Docker container networking restrictions, iptables, or an egress proxy) to block access to private/internal IP ranges.
+
+---
+
+## Errors
+
+The following errors inherit `Gkhtmltopdf::Error`, so you can handle them as follows:
+
+```ruby
+begin
+  Gkhtmltopdf.convert('ftp://example.com', 'example_com.pdf')
+rescue Gkhtmltopdf::Error => e
+  puts e.class   # -> Gkhtmltopdf::URLSchemeInvalid
+  puts e.message # -> Invalid URL scheme: (ftp)
+end
+```
+
+### Gkhtmltopdf::PathUnresolvedError
+
+Firefox or Geckodriver path unresolved. Follow the installation steps in [1. Install](#1-install) to set up.
+
+### Gkhtmltopdf::URLSchemeInvalid
+
+Raised when the URL scheme is invalid (e.g., `ftp://`, `about://`) or the hostname is missing (e.g., `f6a.net`).
+
+### Gkhtmltopdf::BrowserError
+
+Response from Firefox/Geckodriver is not as expected.
 
 ---
 

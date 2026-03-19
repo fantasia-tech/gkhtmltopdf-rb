@@ -23,3 +23,4 @@
 - [ ] ポート範囲設定?
 - [ ] configファイルからオプションを設定?
 - [ ] YARD追加
+- [ ] FireFox timeout

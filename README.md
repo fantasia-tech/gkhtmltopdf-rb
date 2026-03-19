@@ -5,6 +5,11 @@ Gkhtmltopdf is mean Gecko HTML to PDF converter.
 Developed as an alternative to wkhtmltopdf.
 This gem converts HTML to PDF using Firefox's Geckodriver.
 
+[![Gem Version](https://badge.fury.io/rb/gkhtmltopdf.svg)](https://badge.fury.io/rb/gkhtmltopdf)
+![Gem Total Downloads](https://img.shields.io/gem/dt/gkhtmltopdf)
+![GitHub License](https://img.shields.io/github/license/fantasia-tech/gkhtmltopdf-rb)
+![Rspec](https://github.com/fantasia-tech/gkhtmltopdf-rb/actions/workflows/main.yml/badge.svg)
+
 ---
 
 ## How to
@@ -12,16 +17,16 @@ This gem converts HTML to PDF using Firefox's Geckodriver.
 ### 1. Install
 
 1. [Firefox](https://www.firefox.com)
-   - Ubuntu
-     ```bash
-     $ apt install -y firefox
-     $ apt install -y fonts-noto # recommended
-     ```
-   - Debian
-     ```bash
-     $ apt install -y firefox-esr
-     $ apt install -y fonts-noto # recommended
-     ```
+  - Ubuntu
+    ```bash
+    $ apt install -y firefox
+    $ apt install -y fonts-noto # recommended
+    ```
+  - Debian
+    ```bash
+    $ apt install -y firefox-esr
+    $ apt install -y fonts-noto # recommended
+    ```
 
 2. [geckodriver](https://github.com/mozilla/geckodriver)
   - Linux (Ubuntu / Debian)
@@ -105,7 +110,7 @@ Attackers could potentially generate PDFs of internal network resources (e.g., `
 
 ---
 
-## Errors
+## Expected Errors
 
 The following errors inherit `Gkhtmltopdf::Error`, so you can handle them as follows:
 

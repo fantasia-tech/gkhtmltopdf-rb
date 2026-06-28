@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update
-          apt-get install -y git wget xz-utils build-essential libyaml-dev
+          apt-get install -y git wget xz-utils build-essential libyaml-dev xvfb
           apt-get install -y fonts-noto
           apt-get install -y firefox-esr
           wget "https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz" -O geckodriver.tar.gz
@@ -26,4 +26,4 @@ jobs:
           bundle install
       - name: Execute Rspec
         run: |
-          bundle exec rspec
+          xvfb-run bundle exec rspec

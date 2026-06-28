@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 FROM ubuntu:resolute
 
 RUN apt-get update

@@ -9,3 +9,6 @@
 
 .DS_Store
 /*.gem
+
+/lib/gkhtmltopdf/fx_profile/*
+!/lib/gkhtmltopdf/fx_profile/user.js

@@ -17,12 +17,16 @@ RSpec.describe Gkhtmltopdf::Converter do
   end
   describe '#save_pdf' do
     before { converter.open }
-    subject { converter.save_pdf(url, output_path) }
     let(:url) { "file://#{file_fixture('test.html')}" }
-    let(:output_path) { File.join(Dir.mktmpdir, 'output.pdf') }
+    let(:output_path) { Dir.mktmpdir }
+    let(:output) { File.join(output_path, 'output.pdf') }
+    after { FileUtils.remove_entry_secure(output_path) }
+
+    subject { converter.save_pdf(url, output) }
+
     it {
-      expect { subject }.to change { Dir.glob(output_path).count }.from(0).to(1)
-      expect(File.binread(output_path)).to include('/FontName')
+      expect { subject }.to change { Dir.glob(output).count }.from(0).to(1)
+      expect(File.binread(output)).to include('/FontName')
     }
   end
   describe '#resolve_geckodriver_path!' do

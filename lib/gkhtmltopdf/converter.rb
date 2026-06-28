@@ -1,24 +1,32 @@
+# frozen_string_literal: true
+
 require 'net/http'
 require 'json'
 require 'base64'
 require 'uri'
 require 'socket'
+require 'tmpdir'
+require 'fileutils'
 
 module Gkhtmltopdf
   class Converter
-    def open(geckodriver_path: nil, firefox_path: nil, wait_time: nil, port: nil)
+    DEFAULT_FX_USER_AGENT = "gkhtmltopdf-rb(v#{VERSION}) by firefox and gecko".freeze
+
+    def open(geckodriver_path: nil, firefox_path: nil, wait_time: nil, port: nil, user_agent: nil)
       @geckodriver_path = resolve_geckodriver_path!(geckodriver_path)
       @firefox_path = resolve_firefox_path!(firefox_path)
       @port = port || get_free_port
       @base_url = "http://127.0.0.1:#{@port}"
       @pid = spawn("#{@geckodriver_path} --port #{@port}", out: File::NULL, err: File::NULL)
       wait_time ||= 20
+      @profile_path = gen_tmp_profile(user_agent)
       wait_for_gk(wait_time)
       create_session!
     end
 
     def close
       delete_session! if @session_id
+      delete_tmp_profile! if @profile_path
       begin
         unless @pid.nil?
           Process.kill('TERM', @pid)
@@ -101,12 +109,24 @@ module Gkhtmltopdf
       raise BrowserError, "Failed to launch geckodriver (port #{@port})"
     end
 
+    def gen_tmp_profile(ua = nil)
+      tmp_profile_path = Dir.mktmpdir
+      ua ||= DEFAULT_FX_USER_AGENT
+      escaped_user_agent = JSON.generate(ua)
+      profile = []
+      profile << '# set gkhtmltopdf default profile'
+      profile << "user_pref(\"general.useragent.override\", #{escaped_user_agent});\n"
+      File.open(File.join(tmp_profile_path, 'user.js'), 'w') do |f|
+        profile.each { |line| f.puts(line) }
+      end
+      tmp_profile_path
+    end
+
     def post(path, payload)
       uri = URI("#{@base_url}#{path}")
       req = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json')
       req.body = payload.to_json
       res = Net::HTTP.start(uri.hostname, uri.port) { |http| http.request(req) }
-
       begin
         JSON.parse(res.body)
       rescue JSON::ParserError
@@ -115,7 +135,7 @@ module Gkhtmltopdf
     end
 
     def create_session!
-      firefox_options = { args: ["-headless"] }
+      firefox_options = { args: ["-headless", '--profile', @profile_path] }
       firefox_options[:binary] = @firefox_path if @firefox_path != 'firefox'
 
       payload = {
@@ -161,6 +181,10 @@ module Gkhtmltopdf
       req = Net::HTTP::Delete.new(uri)
       Net::HTTP.start(uri.hostname, uri.port) { |http| http.request(req) }
       @session_id = nil
+    end
+
+    def delete_tmp_profile!
+      FileUtils.remove_entry_secure(@profile_path)
     end
 
     def validate_url_scheme!(url_string)

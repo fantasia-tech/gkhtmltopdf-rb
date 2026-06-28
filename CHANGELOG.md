@@ -2,6 +2,12 @@
 
 All noteworthy changes to this project will be documented in this file.
 
+## 1.1.0 / 2026-06-29
+
+- UA設定機能の追加
+- mktmpdirの明示的な削除
+- ubuntuでの動かし方とか修正
+
 ## 1.0.0 / 2026-03-19
 
 - Added serial processing for multiple files and URLs.

@@ -1,3 +1,5 @@
+# escape=\
+# syntax=docker/dockerfile:1.7
 FROM ruby:3.2-slim
 
 RUN apt-get update

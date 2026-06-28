@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Gkhtmltopdf
   class DSL
     def initialize

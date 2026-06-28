@@ -1,0 +1,28 @@
+FROM ubuntu:noble
+
+RUN apt-get update
+RUN apt-get install -y ruby3.2 bundler
+RUN apt-get install -y git wget xz-utils build-essential libyaml-dev
+
+# Install Noto Fonts
+RUN apt-get install -y fonts-noto
+
+# Install Firefox
+RUN wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
+RUN echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null
+RUN tee /etc/apt/preferences.d/mozilla > /dev/null << EOF
+Package: *
+Pin: origin packages.mozilla.org
+Pin-Priority: 1000
+EOF
+RUN apt-get update
+RUN apt-get install -y firefox
+
+# Install Geckodriver
+RUN wget "https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz" -O geckodriver.tar.gz
+RUN tar -xzf geckodriver.tar.gz -C /usr/local/bin
+
+COPY . /app
+WORKDIR /app
+RUN bundle install
+CMD ["bundle", "exec", "rspec"]

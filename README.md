@@ -17,35 +17,41 @@ This gem converts HTML to PDF using Firefox's Geckodriver.
 ### 1. Install
 
 1. [Firefox](https://www.firefox.com)
-  - Ubuntu
+  - Ubuntu  
+    > The snap does not work correctly, so please install it from the [official source](https://support.mozilla.org/en-US/kb/install-firefox-linux).
     ```bash
+    $ wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
+    $ echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null
+    $ tee /etc/apt/preferences.d/mozilla > /dev/null << EOF
+      Package: *
+      Pin: origin packages.mozilla.org
+      Pin-Priority: 1000
+      EOF
     $ apt install -y firefox
     $ apt install -y fonts-noto # recommended
     ```
-  - Debian
+  - Debian  
     ```bash
     $ apt install -y firefox-esr
     $ apt install -y fonts-noto # recommended
     ```
 
 2. [geckodriver](https://github.com/mozilla/geckodriver)
-  - Linux (Ubuntu / Debian)
+  - Linux (Ubuntu / Debian)  
     ```bash
     $ wget "https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz" -O /tmp/geckodriver.tar.gz
     $ tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin
     ```
 
 3. gem install
-  - bundler
+  - bundler  
     ```bash
     $ bundle add gkhtmltopdf
     ```
-  - other
+  - other  
     ```bash
     $ gem install gkhtmltopdf
     ```
-
----
 
 ### 2. Using
 
@@ -62,6 +68,8 @@ Gkhtmltopdf.convert('https://example.com', 'example_com.pdf')
 Gkhtmltopdf.convert('file:///foo/bar/test.html', 'local.pdf')
 # with option (print background)
 Gkhtmltopdf.convert('https://f6a.net/oss/', 'with_bg.pdf', print_options: {background: true})
+# with option (set custom user-agent)
+Gkhtmltopdf.convert('https://f6a.net/oss/', 'ua.pdf', user_agent: 'YOUR USER AGENT')
 ```
 
 Additionally, in version 1.0.0 we added the following syntax.  
@@ -74,6 +82,10 @@ Gkhtmltopdf.open do |gkh2p|
   gkh2p.save_pdf('file:///foo/bar/test.html', 'local.pdf')
   gkh2p.save_pdf('https://f6a.net/oss/', 'with_bg.pdf', print_options: {background: true})
 end
+# set custom user-agent
+Gkhtmltopdf.open(user_agent: 'YOUR USER AGENT') do |gkh2p|
+  gkh2p.save_pdf('https://f6a.net/oss/', 'ua.pdf')
+end
 ```
 
 #### Shell
@@ -85,6 +97,8 @@ $ gkhtmltopdf https://example.com/ example_com.pdf
 $ gkhtmltopdf /foo/bar/test.html local.pdf
 # with option (print background)
 $ gkhtmltopdf https://f6a.net/oss/ with_bg.pdf --background
+# with option (set custom user-agent)
+$ gkhtmltopdf https://f6a.net/oss/ ua.pdf --user-agent "YOUR USER AGENT"
 # other option
 $ gkhtmltopdf --help
 ```
@@ -134,6 +148,12 @@ Raised when the URL scheme is invalid (e.g., `ftp://`, `about://`) or the hostna
 ### Gkhtmltopdf::BrowserError
 
 Response from Firefox/Geckodriver is not as expected.
+
+---
+
+## Documents
+
+- [ForDeveloper](/docs/ForDeveloper.md)
 
 ---
 

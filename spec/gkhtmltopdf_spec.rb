@@ -3,7 +3,9 @@ require 'spec_helper'
 RSpec.describe Gkhtmltopdf do
   describe '.convert' do
     let(:url) { 'https://f6a.net/oss/' }
-    let(:output) { File.join(Dir.mktmpdir, 'output.pdf') }
+    let(:output_path) { Dir.mktmpdir }
+    let(:output) { File.join(output_path, 'output.pdf') }
+    after { FileUtils.remove_entry_secure(output_path) }
 
     subject { Gkhtmltopdf.convert(url, output) }
 
@@ -21,6 +23,7 @@ RSpec.describe Gkhtmltopdf do
   describe '.open' do
     let(:url) { 'https://f6a.net/oss/' }
     let(:output_path) { Dir.mktmpdir }
+    after { FileUtils.remove_entry_secure(output_path) }
 
     subject do
       Gkhtmltopdf.open do |gk|

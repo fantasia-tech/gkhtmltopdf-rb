@@ -12,33 +12,37 @@ options = {
 parser = OptionParser.new do |opts|
   opts.banner = "Usage: gkhtmltopdf [options] <URL_OR_FILE> <OUTPUT_PDF>"
 
-  opts.on("-O", "--orientation [PORTRAIT|LANDSCAPE]", "default: portrait") do |v|
+  opts.on("-O", "--orientation ORIENTATION", ["portrait", "landscape"], "ORIENTATION portrait or landscape (default: portrait)") do |v|
     options[:print_options][:orientation] = v.downcase
+  end
+
+  opts.on("--user-agent USERAGENT", String, "Browser custom USERAGENT") do |v|
+    options[:user_agent] = v
   end
 
   opts.on("--background", "Print background") do
     options[:print_options][:background] = true
   end
 
-  opts.on("--margin-top [CM]", Float, "margin top (cm)") do |v|
+  opts.on("--margin-top CM", Float, "margin top CM") do |v|
     options[:print_options][:margin] ||= {}
     options[:print_options][:margin][:top] = v
   end
 
-  opts.on("--margin-bottom [CM]", Float, "margin bottom (cm)") do |v|
+  opts.on("--margin-bottom CM", Float, "margin bottom CM") do |v|
     options[:print_options][:margin] ||= {}
     options[:print_options][:margin][:bottom] = v
   end
 
-  opts.on("--firefox-path [PATH]", "Firefox custom PATH") do |v|
+  opts.on("--firefox-path PATH", String, "Firefox custom PATH") do |v|
     options[:firefox_path] = v
   end
 
-  opts.on("--geckodriver-path [PATH]", "Geckodriver custom PATH") do |v|
+  opts.on("--geckodriver-path PATH", String, "Geckodriver custom PATH") do |v|
     options[:geckodriver_path] = v
   end
 
-  opts.on("--launch-max-wait-time [NUM]", Integer, "Launch max wait time (approx: NUM * 0.1sec)") do |v|
+  opts.on("--launch-max-wait-time NUM", Integer, "Launch max wait time (approx: NUM * 0.1sec)") do |v|
     options[:wait_time] = v
   end
 
@@ -74,6 +78,7 @@ begin
   init_options[:firefox_path] = options.delete(:firefox_path) if options[:firefox_path]
   init_options[:geckodriver_path] = options.delete(:geckodriver_path) if options[:geckodriver_path]
   init_options[:wait_time] = options.delete(:wait_time) if options[:wait_time]
+  init_options[:user_agent] = options.delete(:user_agent) if options[:user_agent]
 
   Gkhtmltopdf.convert(input_url, output_path, print_options: options[:print_options], **init_options)
 

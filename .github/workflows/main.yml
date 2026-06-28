@@ -8,25 +8,18 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Ruby ${{ matrix.ruby }}
-    strategy:
-      matrix:
-        ruby:
-          - '3.2.10'
+    name: Rspec Test
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ matrix.ruby }}
-      - name: Install dependencies
+      - name: Docker Build
         run: |
-          sudo apt-get update
-          sudo apt-get install -y firefox
-          bundle install
-          wget "https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz" -O /tmp/geckodriver.tar.gz
-          sudo tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin
-      - name: Run rspec test
-        run: bundle exec rspec
+          docker build -f ./dockerfiles/Dockerfile.debian13-ruby32 . -t gkhtmltopdf-d13r32
+          docker build -f ./dockerfiles/Dockerfile.ubuntu24-ruby32 . -t gkhtmltopdf-u24r32
+          docker build -f ./dockerfiles/Dockerfile.ubuntu26-ruby33 . -t gkhtmltopdf-u26r33
+      - name: Docker Run
+        run: |
+          docker run --rm gkhtmltopdf-d13r32
+          docker run --rm gkhtmltopdf-u24r32
+          docker run --rm gkhtmltopdf-u26r33

@@ -2,6 +2,10 @@
 
 All noteworthy changes to this project will be documented in this file.
 
+## 1.1.1 / 2026-06-29
+
+- GeckodriverのSTDOUT/STDERR追加
+
 ## 1.1.0 / 2026-06-29
 
 - UA設定機能の追加

@@ -12,12 +12,14 @@ module Gkhtmltopdf
   class Converter
     DEFAULT_FX_USER_AGENT = "gkhtmltopdf-rb(v#{VERSION}) by firefox and gecko".freeze
 
-    def open(geckodriver_path: nil, firefox_path: nil, wait_time: nil, port: nil, user_agent: nil)
+    def open(geckodriver_path: nil, firefox_path: nil, wait_time: nil, port: nil, user_agent: nil, gecko_stdout: nil, gecko_stderr: nil)
       @geckodriver_path = resolve_geckodriver_path!(geckodriver_path)
       @firefox_path = resolve_firefox_path!(firefox_path)
       @port = port || get_free_port
       @base_url = "http://127.0.0.1:#{@port}"
-      @pid = spawn("#{@geckodriver_path} --port #{@port}", out: File::NULL, err: File::NULL)
+      gecko_stdout = File::NULL if gecko_stdout.nil?
+      gecko_stderr = File::NULL if gecko_stderr.nil?
+      @pid = spawn("#{@geckodriver_path} --port #{@port}", out: gecko_stdout, err: gecko_stderr)
       wait_time ||= 20
       @profile_path = gen_tmp_profile(user_agent)
       wait_for_gk(wait_time)

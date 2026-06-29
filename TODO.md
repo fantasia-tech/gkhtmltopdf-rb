@@ -22,6 +22,10 @@
 - [x] UA設定機能の追加
 - [x] mktmpdirの明示的な削除
 
+## 完了 v1.1.1
+
+- [x] GeckodriverのSTDOUT/STDERR追加
+
 ## つぎ v1.2.0
 
 - [ ] 設定のStruct化?(default切り出し)

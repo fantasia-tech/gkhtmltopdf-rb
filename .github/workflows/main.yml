@@ -1,0 +1,45 @@
+name: Rspec
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Ruby ${{ matrix.ruby }}
+    strategy:
+      matrix:
+        ruby:
+          - '3.2.10'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+      - name: Update apt
+        run: sudo apt-get update
+      - name: Install firefox
+        run: |
+          wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
+          echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | sudo tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null
+          sudo tee /etc/apt/preferences.d/mozilla > /dev/null << EOF
+          Package: *
+          Pin: origin packages.mozilla.org
+          Pin-Priority: 1000
+          EOF
+          bundle install
+          sudo apt-get update
+          sudo apt-get install -y firefox
+      - name: Install geckodriver
+        run: |
+          wget "https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz" -O /tmp/geckodriver.tar.gz
+          sudo tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin
+      - name: Run gkhtmltopdf
+        run: bundle exec gkhtmltopdf --stdout --stderr https://f6a.net/oss oss.pdf
+      - name: Run rspec test
+        run: bundle exec rspec

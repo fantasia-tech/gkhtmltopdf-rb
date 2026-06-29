@@ -6,7 +6,9 @@ require 'gkhtmltopdf'
 
 options = {
   print_options: {},
-  firefox_prefs: {}
+  firefox_prefs: {},
+  gecko_stdout: File::NULL,
+  gecko_stderr: File::NULL
 }
 
 parser = OptionParser.new do |opts|
@@ -46,6 +48,14 @@ parser = OptionParser.new do |opts|
     options[:wait_time] = v
   end
 
+  opts.on("--stdout", "Show Geckodriver stdout") do |b|
+    options[:gecko_stdout] = b ? (STDOUT) : File::NULL
+  end
+
+  opts.on("--stderr", "Show Geckodriver stderr") do |b|
+    options[:gecko_stdout] = b ? (STDERR) : File::NULL
+  end
+
   opts.on("-v", "--version", "display version") do
     puts "Gkhtmltopdf version #{Gkhtmltopdf::VERSION}"
     exit
@@ -79,6 +89,8 @@ begin
   init_options[:geckodriver_path] = options.delete(:geckodriver_path) if options[:geckodriver_path]
   init_options[:wait_time] = options.delete(:wait_time) if options[:wait_time]
   init_options[:user_agent] = options.delete(:user_agent) if options[:user_agent]
+  init_options[:gecko_stdout] = options.delete(:gecko_stdout) if options[:gecko_stdout]
+  init_options[:gecko_stdout] = options.delete(:gecko_stdout) if options[:gecko_stdout]
 
   Gkhtmltopdf.convert(input_url, output_path, print_options: options[:print_options], **init_options)
 

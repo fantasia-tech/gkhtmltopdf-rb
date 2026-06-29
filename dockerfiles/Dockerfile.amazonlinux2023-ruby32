@@ -1,0 +1,21 @@
+# syntax=docker/dockerfile:1.7
+FROM amazonlinux:2023
+RUN yum check-update
+RUN yum install -y wget tar git gzip ruby3.2 ruby3.2-devel libyaml-devel
+RUN yum groupinstall -y "Development Tools"
+
+# Install Noto Fonts
+RUN yum install -y google-noto-cjk-fonts
+RUN yum install -y google-noto-emoji-fonts
+
+# Install Firefox
+RUN yum install -y firefox
+
+# Install Geckodriver
+RUN wget "https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz" -O geckodriver.tar.gz
+RUN tar -xzf geckodriver.tar.gz -C /usr/local/bin
+
+COPY . /app
+WORKDIR /app
+RUN bundle install
+CMD ["bundle", "exec", "rspec"]

@@ -16,33 +16,19 @@ This gem converts HTML to PDF using Firefox's Geckodriver.
 
 ### 1. Install
 
-1. [Firefox](https://www.firefox.com)
-  - Ubuntu  
-    > The snap does not work correctly, so please install it from the [official source](https://support.mozilla.org/en-US/kb/install-firefox-linux).
-    ```bash
-    $ wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
-    $ echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null
-    $ tee /etc/apt/preferences.d/mozilla > /dev/null << EOF
-      Package: *
-      Pin: origin packages.mozilla.org
-      Pin-Priority: 1000
-      EOF
-    $ apt install -y firefox
-    $ apt install -y fonts-noto # recommended
-    ```
-  - Debian  
-    ```bash
-    $ apt install -y firefox-esr
-    $ apt install -y fonts-noto # recommended
-    ```
+> The following is an example of the setup on Debian 13.  
+> For other operating systems (Ubuntu / Amazon Linux), please see [here](/docs/SupportList.md).
 
-2. [geckodriver](https://github.com/mozilla/geckodriver)
-  - Linux (Ubuntu / Debian)  
-    ```bash
-    $ wget "https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz" -O /tmp/geckodriver.tar.gz
-    $ tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin
-    ```
-
+1. [Firefox](https://www.firefox.com)  
+```bash
+$ apt install -y firefox-esr
+$ apt install -y fonts-noto # recommended
+```
+2. [geckodriver](https://github.com/mozilla/geckodriver)  
+```bash
+$ wget "https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz" -O /tmp/geckodriver.tar.gz
+$ tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin
+```
 3. gem install
   - bundler  
     ```bash

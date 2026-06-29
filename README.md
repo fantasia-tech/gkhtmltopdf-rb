@@ -8,6 +8,7 @@ This gem converts HTML to PDF using Firefox's Geckodriver.
 [![Gem Version](https://badge.fury.io/rb/gkhtmltopdf.svg)](https://badge.fury.io/rb/gkhtmltopdf)
 ![Gem Total Downloads](https://img.shields.io/gem/dt/gkhtmltopdf)
 ![GitHub License](https://img.shields.io/github/license/fantasia-tech/gkhtmltopdf-rb)
+![Rspec](https://github.com/fantasia-tech/gkhtmltopdf-rb/actions/workflows/main.yml/badge.svg)
 
 ---
 

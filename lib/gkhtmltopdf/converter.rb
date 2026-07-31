@@ -47,6 +47,13 @@ module Gkhtmltopdf
       File.binwrite(output_path, Base64.decode64(pdf_base64))
     end
 
+    def pdf_binary(url, print_options: {})
+      validate_url_scheme!(url)
+      navigate(url)
+      pdf_base64 = print_pdf(print_options)
+      Base64.decode64(pdf_base64)
+    end
+
     private
 
     def get_free_port

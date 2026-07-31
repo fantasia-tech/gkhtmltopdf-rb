@@ -68,9 +68,17 @@ Gkhtmltopdf.open do |gkh2p|
   gkh2p.save_pdf('file:///foo/bar/test.html', 'local.pdf')
   gkh2p.save_pdf('https://f6a.net/oss/', 'with_bg.pdf', print_options: {background: true})
 end
-# set custom user-agent
+# After version 1.1.0: set custom user-agent
 Gkhtmltopdf.open(user_agent: 'YOUR USER AGENT') do |gkh2p|
   gkh2p.save_pdf('https://f6a.net/oss/', 'ua.pdf')
+end
+# After version 1.2.0: get PDF binary
+Gkhtmltopdf.open do |gkh2p|
+  pdf_obj = gkh2p.pdf_binary('https://f6a.net/oss/', print_options: {background: true})
+  # for example, If the PDF size between 16KB and 1MB, write binary to a file.
+  max = 1 * 1000 * 1000
+  min = 16 * 1000
+  File.binwrite('binary.pdf', pdf_obj) if pdf_obj.bytesize.between?(min, max)
 end
 ```
 

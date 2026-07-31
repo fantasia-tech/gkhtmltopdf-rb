@@ -17,5 +17,9 @@ module Gkhtmltopdf
     def save_pdf(url, output_path, print_options: {})
       @converter.save_pdf(url, output_path, print_options: print_options)
     end
+
+    def pdf_binary(url, print_options: {})
+      @converter.pdf_binary(url, print_options: print_options)
+    end
   end
 end

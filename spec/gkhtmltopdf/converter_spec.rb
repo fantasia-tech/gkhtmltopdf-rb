@@ -29,6 +29,16 @@ RSpec.describe Gkhtmltopdf::Converter do
       expect(File.binread(output)).to include('/FontName')
     }
   end
+  describe '#pdf_binary' do
+    before { converter.open }
+    let(:url) { "file://#{file_fixture('test.html')}" }
+
+    subject { converter.pdf_binary(url) }
+
+    it {
+      is_expected.to include('/FontName')
+    }
+  end
   describe '#resolve_geckodriver_path!' do
     subject { converter.send(:resolve_geckodriver_path!, nil) }
     context 'geckodriver is not available' do

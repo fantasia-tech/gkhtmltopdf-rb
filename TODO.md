@@ -26,14 +26,14 @@
 
 - [x] GeckodriverのSTDOUT/STDERR追加
 
-## つぎ v1.2.0
+## 完了 v1.2.0
 
-- [ ] 設定のStruct化?(default切り出し)
-- [ ] pdfをsaveせずバイナリを直接返却するメソッドの追加
-- [ ] 肥大化したconvert.rbの分割( `Gkhtmltopdf::PDF` とかつくるか)
+- [x] pdfをsaveせずバイナリを直接返却するメソッドの追加
 
 ## 検討中
 
+- [ ] 設定のStruct化?(default切り出し)
+- [ ] 肥大化したconvert.rbの分割( `Gkhtmltopdf::PDF` とかつくるか)
 - [ ] ポート範囲設定?
 - [ ] YARD追加
 - [ ] FireFox timeout

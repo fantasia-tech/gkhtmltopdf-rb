@@ -24,22 +24,41 @@ RSpec.describe Gkhtmltopdf do
     let(:url) { 'https://f6a.net/oss/' }
     let(:output_path) { Dir.mktmpdir }
     after { FileUtils.remove_entry_secure(output_path) }
+    describe '.save_pdf' do
+      subject do
+        Gkhtmltopdf.open do |gk|
+          (1..3).each { |n| gk.save_pdf("#{url}?test=#{n}", File.join(output_path, "#{n}.pdf")) }
+        end
+      end
 
-    subject do
-      Gkhtmltopdf.open do |gk|
-        (1..3).each { |n| gk.save_pdf("#{url}?test=#{n}", File.join(output_path, "#{n}.pdf")) }
+      it 'successful conversion' do
+        expect { subject }.to change { Dir.glob(File.join(output_path, '*.pdf')).count }.from(0).to(3)
+        expect { subject }.not_to raise_error
+      end
+
+      context 'invalid URL' do
+        let(:url) { 'ftp://example.com' }
+        it 'raises an error' do
+          expect { subject }.to raise_error(Gkhtmltopdf::URLSchemeInvalid, 'Invalid URL scheme: (ftp)')
+        end
       end
     end
-
-    it 'successful conversion' do
-      expect { subject }.to change { Dir.glob(File.join(output_path, '*.pdf')).count }.from(0).to(3)
-      expect { subject }.not_to raise_error
-    end
-
-    context 'invalid URL' do
-      let(:url) { 'ftp://example.com' }
-      it 'raises an error' do
-        expect { subject }.to raise_error(Gkhtmltopdf::URLSchemeInvalid, 'Invalid URL scheme: (ftp)')
+    describe '.pdf_binary' do
+      subject do
+        Gkhtmltopdf.open do |gk|
+          pdf_binary = gk.pdf_binary("#{url}?test=binary")
+          pdf_binary.bytesize
+        end
+      end
+      it 'successful conversion' do
+        is_expected.to be > 1000
+        expect { subject }.not_to raise_error
+      end
+      context 'invalid URL' do
+        let(:url) { 'ftp://example.com' }
+        it 'raises an error' do
+          expect { subject }.to raise_error(Gkhtmltopdf::URLSchemeInvalid, 'Invalid URL scheme: (ftp)')
+        end
       end
     end
   end

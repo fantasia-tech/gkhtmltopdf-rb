@@ -2,6 +2,15 @@
 
 All noteworthy changes to this project will be documented in this file.
 
+## 1.2.1 / 2026-10-27
+
+- No new features added.
+  - 機能追加なし
+- Updated DevEnv to ruby4.
+  - 開発環境をruby4.0.9に
+- Added dockerfiles.
+  - amazonlinux2023でのテストとか追加
+
 ## 1.2.0 / 2026-07-31
 
 - Added `pdf_binary` methods.

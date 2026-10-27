@@ -5,39 +5,45 @@
 ### Docker build
 
 ```bash
-$ docker build -f ./dockerfiles/Dockerfile.debian13-ruby32 . -t gkhtmltopdf-d13r32
 $ docker build -f ./dockerfiles/Dockerfile.ubuntu24-ruby32 . -t gkhtmltopdf-u24r32
 $ docker build -f ./dockerfiles/Dockerfile.ubuntu26-ruby33 . -t gkhtmltopdf-u26r33
+$ docker build -f ./dockerfiles/Dockerfile.debian13-ruby32 . -t gkhtmltopdf-d13r32
+$ docker build -f ./dockerfiles/Dockerfile.debian13-ruby33 . -t gkhtmltopdf-d13r33
 $ docker build -f ./dockerfiles/Dockerfile.debian13-ruby34 . -t gkhtmltopdf-d13r34
 $ docker build -f ./dockerfiles/Dockerfile.debian13-ruby40 . -t gkhtmltopdf-d13r40
 $ docker build -f ./dockerfiles/Dockerfile.amazonlinux2023-ruby32 . -t gkhtmltopdf-a23r32
+$ docker build -f ./dockerfiles/Dockerfile.amazonlinux2023-ruby40 . -t gkhtmltopdf-a23r40
 ```
 
 ### Docker run rspec
 
 ```bash
-$ docker run --rm gkhtmltopdf-d13r32
 $ docker run --rm gkhtmltopdf-u24r32
 $ docker run --rm gkhtmltopdf-u26r33
+$ docker run --rm gkhtmltopdf-d13r32
+$ docker run --rm gkhtmltopdf-d13r33
 $ docker run --rm gkhtmltopdf-d13r34
 $ docker run --rm gkhtmltopdf-d13r40
 $ docker run --rm gkhtmltopdf-a23r32
+$ docker run --rm gkhtmltopdf-a23r40
 ```
 
 ### Docker remove image
 
 ```bash
-$ docker rmi gkhtmltopdf-d13r32
 $ docker rmi gkhtmltopdf-u24r32
 $ docker rmi gkhtmltopdf-u26r33
+$ docker rmi gkhtmltopdf-d13r32
+$ docker rmi gkhtmltopdf-d13r33
 $ docker rmi gkhtmltopdf-d13r34
 $ docker rmi gkhtmltopdf-d13r40
 $ docker rmi gkhtmltopdf-a23r32
+$ docker rmi gkhtmltopdf-a23r40
 ```
 
 ---
 
-## Build
+## Build & Push
 
 ```bash
 $ gem build gkhtmltopdf.gemspec
